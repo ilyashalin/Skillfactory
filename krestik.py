@@ -41,10 +41,10 @@ def check():
         for c in cord:
             symbols.append(field[c[0]][c[1]])
         if symbols == ["X", "X", "X"]:
-            print("Выиграл X!!!")
+            print("Выиграл Крестик!!!")
             return True
         if symbols == ["0", "0", "0"]:
-            print("Выиграл 0!!!")
+            print("Выиграл Нолик!!!")
             return True
     return False
 def greet():
