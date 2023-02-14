@@ -1,20 +1,31 @@
-class Human:
-    age = None
+class Event:
+    def __init__(self, timestamp=0, event_type="", session_id=""):
+        self.timestamp = timestamp
+        self.type = event_type
+        self.session_id = session_id
 
-    def __init__(self, age=4):
-        self.age = age
+    def init_from_dict(self, event_dict):
+        self.timestamp = event_dict.get("timestamp")
+        self.type = event_dict.get("type")
+        self.session_id = event_dict.get("session_id")
 
-    # добавляем геттер - специальный метод для получения поля
-    def get_age(self):
-        return self.age
-
-    # добавляем сеттер - специальный метод для установки нового значения
-    def set_age(self, age):
-        if age > 0 and isinstance(age,
-                                  int):  # проверяем условия, что человеку должно быть больше 0 лет и его возраст - целое число
-            self.age = age
+    def show_description(self):
+        print("This is generic event.")
 
 
-h = Human()
-h.set_age(15)
-print(h.get_age())
+class ItemViewEvent(Event):
+    type = "itemViewEvent"
+
+    def __init__(self, timestamp=0, session_id="", number_of_views=0):
+        self.timestamp = timestamp
+        self.session_id = session_id
+        self.number_of_views = number_of_views
+
+    def show_description(self):
+        print("This event means someone has browsed an item.")
+
+
+if __name__ == "__main__":
+    test_view_event = ItemViewEvent(timestamp=1549461608000, session_id="0:NynteeXG:MYlskrqZbcmXNSFEJaZIsNVGeDLLpmct", number_of_views=6)
+    test_view_event.show_description()
+    print(test_view_event.type)
