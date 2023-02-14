@@ -93,3 +93,4 @@ if __name__ == '__main__':
     board.setCell(7, p1.getMark())
     print("win:" + winCondition(board))
     render(board)
+print()
