@@ -149,3 +149,73 @@ class GameLogic:
   def getScore(self):
      return self.score
 #--------------------------------------------------------------------------------------------------------------------
+# классю, реализующий графическую подсистему игры
+class PyGameGui:
+    def __init__(self, w, h, logic) -> None:
+        # ширина окна
+        self.main_w = w
+        # высота окна
+        self.main_h = h
+        # окно pygame
+        self.screen = pygame.display.set_mode([self.main_w, self.main_h])
+        # логика игры в виде внутреннего объекта
+        self.logic = logic
+        # шрифт для отображения счёта на экране
+        self.font = pygame.font.SysFont('Consolas', 30)
+
+    # метод, который запускает игру
+    def run(self):
+        running = True
+        # устанавливаем таймер pygame на 1 сек
+        pygame.time.set_timer(pygame.USEREVENT + GameEvent.Event_Tick, 1000)
+        # создаем бесконечный цикл обработки сообщений от пользователя
+        while running:
+            # если пользователь закрыл окно, то завершаем обработку событий и заканчиваем игру
+            # иначе обрабатываем сообщение
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                else:
+                    self.processEvent(event)
+            # выполняем отрисовку
+            self.draw()
+
+    # метод обработки сообщений от интерфейса
+    def processEvent(self, event):
+        # если событие таймера, то переделываем событие pygame в события нашей игры GameEvent
+        if (event.type >= pygame.USEREVENT) and (event.type < pygame.NUMEVENTS):
+            myevent = GameEvent()
+            myevent.type = event.type - pygame.USEREVENT
+            self.logic.processEvent(myevent)
+
+        # если событие клик мышкой, то передаём позицию клика в сообщении Hit
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pypos = event.pos
+            myevent = GameEvent(GameEvent.Event_Hit, Pos(pypos[0], pypos[1]))
+            self.logic.processEvent(myevent)
+
+    # метод отрисовки доски
+    def draw(self):
+        # заполняем фон
+        self.screen.fill((255, 255, 255))
+
+        # получаем все активные цели на доске и отрисовываем их в виде прямоугольников соответствующего цвета
+        marks = self.logic.getBoard()
+        for mark in marks:
+            pygame.draw.rect(self.screen, mark.getColor(),
+                             pygame.Rect(mark.getPos().x, mark.getPos().y, mark.getWidth(), mark.getHeight()))
+
+        # получаем текущие очки
+        score = self.logic.getScore()
+        # отображаем счёт на окне
+        self.screen.blit(self.font.render(f'score:{score}', True, (0, 0, 0)), (32, 48))
+
+        pygame.display.flip()
+#---------------------------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+  pygame.init()
+  width = 800
+  height  = 600
+  gui = PyGameGui(width, height, GameLogic(width, height))
+  gui.run()
+  pygame.quit()
